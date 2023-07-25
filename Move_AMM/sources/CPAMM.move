@@ -425,23 +425,24 @@ module NamedAddr::CPAMM {
         assert!(provide_liquidity(account, amount1, amount2), 0);
     }
 
-    // #[test(account = @0x1, owner_acc = @0x42)]
-    // fun test_remove_liquidity(account: &signer, owner_acc: &signer) acquires AMM_Balance, Reserve, LP_Balance, LP_Ledger {
-    //     publish_AMM_balance(account);
-    //     publish_LP_ledger(owner_acc);
-    //     publish_LP_balance(account);
-    //     let addr = signer::address_of(account);
-    //     let first_deposit: u64 = 10000;
-    //     // initialise reserve
-    //     assert!(publish_reserve(owner_acc) == true, 999);
-    //     // deposit
-    //     deposit_asset1_to_address(addr, first_deposit);
-    //     deposit_asset2_to_address(addr, first_deposit);
-    //     let amount1: u64 = 1000;
-    //     let amount2: u64 = 1000;
-    //     provide_liquidity(account, amount1, amount2);
-    //     assert!(remove_liquidity(account, amount1, amount2), 0);
-    // }
+    #[test(account = @0x1, owner_acc = @0x42)]
+    #[expected_failure(abort_code = EINSUFFICIENT_BALANCE)]
+    fun test_remove_liquidity(account: &signer, owner_acc: &signer) acquires AMM_Balance, Reserve, LP_Balance, LP_Ledger {
+        publish_LP_ledger(owner_acc);
+        publish_AMM_balance(account);
+        publish_LP_balance(account);
+        let addr = signer::address_of(account);
+        let first_deposit: u64 = 10000;
+        // initialise reserve
+        assert!(publish_reserve(owner_acc) == true, 999);
+        // deposit
+        deposit_asset1_to_address(addr, first_deposit);
+        deposit_asset2_to_address(addr, first_deposit);
+        let amount1: u64 = 1000;
+        let amount2: u64 = 1000;
+        provide_liquidity(account, amount1, amount2);
+        assert!(remove_liquidity(account, amount1, amount2), 0);
+    }
     
     #[test(account = @0x1, owner_acc = @0x42)]
     fun test_swap_asset1_to_asset2(account: &signer, owner_acc: &signer) acquires AMM_Balance, Reserve {
