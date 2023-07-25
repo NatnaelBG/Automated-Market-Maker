@@ -1,0 +1,12 @@
+[package]
+name = "CPAMM"
+version = "0.0.0"
+
+[dependencies]
+MoveStdlib = { git = "https://github.com/move-language/move.git", subdir = "language/move-stdlib", rev = "main" }
+MoveNursery = { git = "https://github.com/move-language/move.git", subdir = "language/move-stdlib/nursery", rev = "main" }
+
+[addresses]
+std =  "0x1"
+DevAddr = "0x42"
+NamedAddr = "0x42"
