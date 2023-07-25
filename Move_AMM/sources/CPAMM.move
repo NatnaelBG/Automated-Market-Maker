@@ -48,9 +48,6 @@ module NamedAddr::CPAMM {
         let reserve = Reserve { asset1_reserve: 100000, asset2_reserve: 100000 };
         assert!(!exists<Reserve>(signer::address_of(account)), EALREADY_HAS_BALANCE);
         move_to(account, reserve);
-    //     let bal1_ref = borrow_global_mut<Balance>(signer::address_of(account));
-    //     let asset1_ref: &mut Asset = &mut ((*bal1_ref).asset);
-    //     (*asset1_ref).value = 100;
         return true
     }
 
@@ -60,9 +57,6 @@ module NamedAddr::CPAMM {
         let lp_ledger = LP_Ledger { ledger: lp_ledger_vector };
         assert!(!exists<LP_Ledger>(signer::address_of(account)), EALREADY_HAS_BALANCE);
         move_to(account, lp_ledger);
-    //     let bal1_ref = borrow_global_mut<Balance>(signer::address_of(account));
-    //     let asset1_ref: &mut Asset = &mut ((*bal1_ref).asset);
-    //     (*asset1_ref).value = 100;
         return true
     }
 
@@ -72,9 +66,6 @@ module NamedAddr::CPAMM {
         let null_asset = Asset { value: 0 };
         assert!(!exists<AMM_Balance>(signer::address_of(account)), EALREADY_HAS_BALANCE);
         move_to(account, AMM_Balance { asset1:  null_asset, asset2:  null_asset  });
-    //     let bal1_ref = borrow_global_mut<Balance>(signer::address_of(account));
-    //     let asset1_ref: &mut Asset = &mut ((*bal1_ref).asset);
-    //     (*asset1_ref).value = 100;
         return true
     }
 
@@ -95,7 +86,6 @@ module NamedAddr::CPAMM {
         let (bal1, _) = get_amm_balance_of(addr);
         let balance_ref = &mut borrow_global_mut<AMM_Balance>(addr).asset1.value;
         *balance_ref = bal1 + _value;
-        // *(reserve_ref).asset1_reserve.value = *reserve_ref.asset1_reserve.value - _value;  
         *reserve_ref = *reserve_ref - _value;
     }
 
@@ -106,8 +96,7 @@ module NamedAddr::CPAMM {
 
         let (_, bal2) = get_amm_balance_of(addr);
         let balance_ref = &mut borrow_global_mut<AMM_Balance>(addr).asset2.value;
-        *balance_ref = bal2 + _value;
-        // *(reserve_ref).asset1_reserve.value = *reserve_ref.asset1_reserve.value - _value;  
+        *balance_ref = bal2 + _value; 
         *reserve_ref = *reserve_ref - _value;
     }
 
@@ -132,11 +121,9 @@ module NamedAddr::CPAMM {
         let balance_ref = &mut borrow_global_mut<AMM_Balance>(addr).asset2.value;
         let bal2: u64 = *balance_ref;
         assert!(bal2 >= amount, EINSUFFICIENT_BALANCE);
-        // let balance_ref = &mut borrow_global_mut<AMM_Balance>(addr).asset2.value;
         *balance_ref = bal2 - amount;
         let asset2_reserve_ref = &mut borrow_global_mut<Reserve>(@NamedAddr).asset2_reserve;
         *asset2_reserve_ref = *asset2_reserve_ref + amount;
-        // Asset { value: amount }
         return true
     }
 
@@ -150,9 +137,6 @@ module NamedAddr::CPAMM {
             move_to(account, LP_Balance { addr: user_addr, asset1_lp:  null_asset, asset2_lp:  null_asset  });
             // return true
         };
-    //     let bal1_ref = borrow_global_mut<Balance>(signer::address_of(account));
-    //     let asset1_ref: &mut Asset = &mut ((*bal1_ref).asset);
-    //     (*asset1_ref).value = 100;
         return true
     }
 
@@ -334,7 +318,6 @@ module NamedAddr::CPAMM {
     fun test_deposit_asset1_to_address(account: &signer, owner_acc: &signer) acquires AMM_Balance, Reserve {
         publish_AMM_balance(account);
         let addr = signer::address_of(account);
-        // let (old_bal1, _): (u64, u64) = get_amm_balance_of(addr);
         let first_deposit: u64 = 900;
 
         // initialise reserve
@@ -344,17 +327,13 @@ module NamedAddr::CPAMM {
         deposit_asset1_to_address(addr, first_deposit);
         let (new_bal1, _): (u64, u64) = get_amm_balance_of(addr);
         assert!(new_bal1 == first_deposit, 0);
-        // debug::print(&old_bal1);
-        // debug::print(&old_bal2);
         debug::print(&new_bal1);
-        // debug::print(&new_bal2);
     }
 
     #[test(account = @0x1, owner_acc = @0x42)]
     fun test_deposit_asset2_to_address(account: &signer, owner_acc: &signer) acquires AMM_Balance, Reserve {
         publish_AMM_balance(account);
         let addr = signer::address_of(account);
-        // let (old_bal1, _): (u64, u64) = get_amm_balance_of(addr);
         let first_deposit: u64 = 900;
 
         // initialise reserve
@@ -364,10 +343,7 @@ module NamedAddr::CPAMM {
         deposit_asset2_to_address(addr, first_deposit);
         let (_, new_bal2): (u64, u64) = get_amm_balance_of(addr);
         assert!(new_bal2 == first_deposit, 0);
-        // debug::print(&old_bal1);
-        // debug::print(&old_bal2);
         debug::print(&new_bal2);
-        // debug::print(&new_bal2);
     }
 
     #[test(account = @0x1, owner_acc = @0x42)]
@@ -432,7 +408,7 @@ module NamedAddr::CPAMM {
         
 
     }
-    #[test(account = @0x1, owner_acc = @NamedAddr)] // lana
+    #[test(account = @0x1, owner_acc = @NamedAddr)]
     fun test_provide_liquidity(account: &signer, owner_acc: &signer) acquires AMM_Balance, Reserve, LP_Balance, LP_Ledger {
         publish_LP_ledger(owner_acc);
         publish_AMM_balance(account);
