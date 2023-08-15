@@ -62,7 +62,7 @@ module NamedAddr::CPAMM {
 
     /// Publish an empty balance resource under `account`'s address in global storage. This function must be called before
 
-    public fun publish_AMM_balance(account: &signer):bool {
+    fun publish_AMM_balance(account: &signer):bool {
         let null_asset = Asset { value: 0 };
         assert!(!exists<AMM_Balance>(signer::address_of(account)), EALREADY_HAS_BALANCE);
         move_to(account, AMM_Balance { asset1:  null_asset, asset2:  null_asset  });
@@ -129,7 +129,7 @@ module NamedAddr::CPAMM {
 
     // 
 
-    public fun publish_LP_balance(account: &signer):bool {
+    fun publish_LP_balance(account: &signer):bool {
         let user_addr: address = signer::address_of(account);
         if (!exists<LP_Balance>(user_addr)) {
             
