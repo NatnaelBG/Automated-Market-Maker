@@ -39,7 +39,7 @@ module NamedAddr::CPAMM {
     }
 
     // struct to keep track of all liquidity providers, their addresses and the amount of liquidity they provided
-    struct LP_Ledger has key, store, copy {
+    struct LP_Ledger has key, store, copy, drop {
         ledger: vector<LP_Balance>
     }
 
@@ -55,8 +55,12 @@ module NamedAddr::CPAMM {
         assert!(signer::address_of(account) == MODULE_OWNER, ENOT_MODULE_OWNER);
         let lp_ledger_vector = vector::empty<LP_Balance>();
         let lp_ledger = LP_Ledger { ledger: lp_ledger_vector };
-        assert!(!exists<LP_Ledger>(signer::address_of(account)), EALREADY_HAS_BALANCE);
-        move_to(account, lp_ledger);
+        // assert!(!exists<LP_Ledger>(signer::address_of(account)), EALREADY_HAS_BALANCE);
+        // move_to(account, lp_ledger);
+        if(!exists<LP_Ledger>(signer::address_of(account))) {
+            move_to(account, lp_ledger);
+        };
+        
         return true
     }
 
@@ -64,8 +68,12 @@ module NamedAddr::CPAMM {
 
     fun publish_AMM_balance(account: &signer):bool {
         let null_asset = Asset { value: 0 };
-        assert!(!exists<AMM_Balance>(signer::address_of(account)), EALREADY_HAS_BALANCE);
-        move_to(account, AMM_Balance { asset1:  null_asset, asset2:  null_asset  });
+        // assert!(!exists<AMM_Balance>(signer::address_of(account)), EALREADY_HAS_BALANCE);
+        // move_to(account, AMM_Balance { asset1:  null_asset, asset2:  null_asset  });
+        if(!exists<AMM_Balance>(signer::address_of(account))) {
+            move_to(account, AMM_Balance { asset1:  null_asset, asset2:  null_asset  });
+        };
+        
         return true
     }
 
@@ -135,7 +143,6 @@ module NamedAddr::CPAMM {
             
             let null_asset = Asset { value: 0 };
             move_to(account, LP_Balance { addr: user_addr, asset1_lp:  null_asset, asset2_lp:  null_asset  });
-            // return true
         };
         return true
     }
@@ -236,7 +243,7 @@ module NamedAddr::CPAMM {
         // let's check if dy/dx == Y/X -> new_asset2 / new_asset1 = asset2_reserve / asset1_reserve
         assert!((amount2 / amount1) == (asset2_reserve_bal / asset1_reserve_bal), EINVALID_ASSET_RATIO);
         
-        // withdraw both amounts from the account and add it to reserve
+        // withdraw both amounts from the reserve and add it to account
         deposit_asset1_to_address(addr, amount1); 
         deposit_asset2_to_address(addr, amount2); 
 
