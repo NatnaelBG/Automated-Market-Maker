@@ -43,7 +43,7 @@ module NamedAddr::CPAMM {
         ledger: vector<LP_Balance>
     }
 
-    public fun publish_reserve(account: &signer):bool {
+    fun publish_reserve(account: &signer):bool {
         assert!(signer::address_of(account) == MODULE_OWNER, ENOT_MODULE_OWNER);
         let reserve = Reserve { asset1_reserve: 100000, asset2_reserve: 100000 };
         assert!(!exists<Reserve>(signer::address_of(account)), EALREADY_HAS_BALANCE);
@@ -51,7 +51,7 @@ module NamedAddr::CPAMM {
         return true
     }
 
-    public fun publish_LP_ledger(account: &signer):bool {
+    fun publish_LP_ledger(account: &signer):bool {
         assert!(signer::address_of(account) == MODULE_OWNER, ENOT_MODULE_OWNER);
         let lp_ledger_vector = vector::empty<LP_Balance>();
         let lp_ledger = LP_Ledger { ledger: lp_ledger_vector };
